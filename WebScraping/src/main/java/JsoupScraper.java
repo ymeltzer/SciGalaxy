@@ -24,40 +24,49 @@ public class JsoupScraper {
     //PMC free article
     public static void scrapePmcFree(String url) throws IOException {
 
-        final Document document = Jsoup.connect(url).get();
+        // Get Title
+    	final Document document = Jsoup.connect(url).get();
         System.out.println("Title: " + document.title());
         System.out.println();
 
+        // Get Reference List
         String refs = document.body().select("#reference-list" /*css selector*/).get(0).text();
         System.out.println("References: " +refs);
         System.out.println();
 
+        // Get Authors
         Elements auths = document.select(".fm-author");
         System.out.println("Authors: " + auths.get(0).text());
         System.out.println();
 
-        Elements otherContributingGroups = document.select(".contrib-group");
-        System.out.println("Contributing groups: " + otherContributingGroups.get(0).text());
+        // Get Contributing Groups (NOT NEEDED!)
+        //Elements otherContributingGroups = document.select(".contrib-group");
+        //System.out.println("Contributing groups: " + otherContributingGroups.get(0).text());
         //can also combine two classes, document.select(".contrib-group, fm-author");
-        System.out.println();
+        //System.out.println();
 
+        // Get PMID
         Elements pmid = document.select(".fm-citation-pmid");
         //you can select a class and the call select again to get href/text etc
         System.out.println( pmid.get(0).text());
         System.out.println();
 
+        // Get PMCID
         Elements PMCID = document.select(".fm-citation-pmcid");
         System.out.println(PMCID.get(0).text());
         System.out.println();
 
+        // Get Publication Date
         Elements pubDate = document.select(".fm-vol-iss-date");
         System.out.println(pubDate.get(0).text());
         System.out.println();
 
+        //Get DOI
         Elements DOI = document.select(".doi");
         System.out.println(DOI.get(0).text());
         System.out.println();
 
+        // Get PubMed URL
         Elements pubMedURL = document.select("head > link:nth-child(17)");
         System.out.println("PubMed URL: " + pubMedURL.get(0).baseUri());
         System.out.println();
