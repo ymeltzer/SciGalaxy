@@ -15,27 +15,26 @@ public class DataTable {
     	setTableName(tableName);
     	
     	// Column Names, 13 Columns
-        String[] columnNames = { "Title", "Authors", "Journal", "Journal_Page", 
+        String[] columnNames = { "Title", "Authors", "Journal", 
         		"Publication_Date", "PubMed_URL", "Journal_URL", "DOI", "PMID", "PMCID", 
-        		"Keywords", "MeSH_Keywords", "References" };
+        		"Keywords", "MeSH_Keywords", "References", "Source" };
         
         // Table Code
         // 1 = Title
         // 2 = Authors
         // 3 = Journal
-        // 4 = Journal_Page
-        // 5 = Publication_Date
-        // 6 = PubMed_URL
-        // 7 = Journal_URL
-        // 8 = DOI
-        // 9 = PMID
-        // 10 = PMCID
-        // 11 = Keywords
-        // 12 = MeSH_Keywords
-        // 13 = References
+        // 4 = Publication_Date
+        // 5 = PubMed_URL
+        // 6 = Journal_URL
+        // 7 = DOI
+        // 8 = PMID
+        // 9 = PMCID
+        // 10 = Keywords
+        // 11 = MeSH_Keywords
+        // 12 = References
+        // 13 = Source
         
         table.add(columnNames); 
-
     }
     
     public void setTableName(String tableName) {
