@@ -5,11 +5,18 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 
 public class PMCAbstract {
-	static DataRow DataRow = new DataRow();
+	DataRow DataRow;
+	ErrorLog ErrorLog;
 	
 	public static void main(String[] args) throws IOException {
-        scrapePMCAbstract("https://www.ncbi.nlm.nih.gov/pubmed/30348987");
+        ErrorLog errorLog = new ErrorLog();
+		PMCAbstract PA = new PMCAbstract(errorLog);
+		PA.scrapePMCAbstract("https://www.ncbi.nlm.nih.gov/pubmed/30348987");
     }
+	
+	public PMCAbstract(ErrorLog errorlog) {
+		ErrorLog = errorlog;
+	}
 	
 	//for articles of the type
     //https://www.ncbi.nlm.nih.gov/pubmed/30366941
@@ -18,17 +25,52 @@ public class PMCAbstract {
 	//https://www.ncbi.nlm.nih.gov/pubmed/30290272
 	//https://www.ncbi.nlm.nih.gov/pubmed/30348987
     //PMC Abstract
-    public static String[] scrapePMCAbstract(String url) throws IOException {
-    	// Get HTML of WebPage
-    	final Document document = Jsoup.connect(url).get();
+    public String[] scrapePMCAbstract(String url) throws IOException {
     	
+    	// Get HTML of WebPage
+    	try {
+    		final Document document = Jsoup.connect(url).get();
+    		
+    		// Get Data from PubMed Abstract
+    		String journalURL = getAbstractData(url, document);
+    		
+            // Get rest of Data from Journal
+            JournalSelector js = new JournalSelector(journalURL, DataRow, ErrorLog);
+            DataRow = js.getJournalData();
+            ErrorLog = js.getErrorLog();
+    	}
+    	catch (Exception e) {
+    		ErrorLog.addError("Error: HTML Document Not found for " + url);
+    	}
+        
+        // Convert RowData to array
+        String[] row = DataRow.getRow();
+        
+        //Print DataRow
+        Arrays.stream(row).forEach(System.out::println);
+        System.out.println();
+        
+        return row;
+    }
+    
+    public static String getAbstractData(String url, Document document) {
     	// Get Title
-    	String title = document.select("#maincontent > div > div.rprt_all > div > h1").get(0).text();
-    	DataRow.setTitle(title);
+    	try {
+    		String title = document.select("#maincontent > div > div.rprt_all > div > h1").get(0).text();
+        	DataRow.setTitle(title);
+    	}
+    	catch (IndexOutOfBoundsException e ) {
+        	ErrorLog.addError("Error: No Title found in Abstract of" + url);
+        }
     	
     	// Get Authors
-    	String authors = document.select(".auths").get(0).text();
-        DataRow.setAuthors(authors);
+    	try {
+    		String authors = document.select(".auths").get(0).text();
+            DataRow.setAuthors(authors);
+    	}
+    	catch (IndexOutOfBoundsException e ) {
+        	ErrorLog.addError("Error: No Authors found in Abstract of" + url);
+        }
         
         // Get Journal
         String journal = document.select(".cit").get(0).text();
@@ -70,7 +112,7 @@ public class PMCAbstract {
             DataRow.setPMCID(PMCID);
         }
         catch (IndexOutOfBoundsException e ) {
-        	//arraylist.add("Error: No key words in Abstract" + url));
+        	ErrorLog.addError("Error: No PMCID found in Abstract of " + url);
         }
         
         // Get Keywords
@@ -80,29 +122,17 @@ public class PMCAbstract {
             DataRow.setKeywords(keywords);
         }
         catch (IndexOutOfBoundsException e ) {
-        	//arraylist.add("Error: No key words in Abstract" + url));
+        	ErrorLog.addError("Error: No keywords found in Abstract of " + url);
         }
-        
         
         // Set Source
         String source = "PMC_Abstract";
         DataRow.setSource(source);
         
-        // Enter Full Text Article for References and Missing Information
-        DataRow = journalSelector(journalURL, DataRow);
-        
-        //Return DataRow
-        String[] row = DataRow.getRow();
-        
-        //Print DataRow
-        Arrays.stream(row).forEach(System.out::println);
-        System.out.println();
-        
-        return row;
+        return journalURL;     
     }
     
-    public static DataRow journalSelector(String url, DataRow row) {
-    	if(url.contains())
-    	return row;
+    public ErrorLog getErrorLog() {
+    	return ErrorLog;
     }
 }

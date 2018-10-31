@@ -6,13 +6,9 @@ public class DataTable {
 
     // Table 
 	List<String[]> table = new ArrayList<String[]>();
-	
-    //Table Title
-    String tableTitle;
     
     //Constructor
-    public DataTable(String tableName) {
-    	setTableName(tableName);
+    public DataTable() {
     	
     	// Column Names, 13 Columns
         String[] columnNames = { "Title", "Authors", "Journal", 
@@ -37,15 +33,11 @@ public class DataTable {
         table.add(columnNames); 
     }
     
-    public void setTableName(String tableName) {
-    	this.tableTitle = tableName;
-    }
-    
-    public String getTitle() {
-    	return this.tableTitle;
-    }
-    
     public void addRow(String[] row) {
     	this.table.add(row);
+    }
+    
+    public List<String[]> getDataList() {
+    	return table;
     }
  }
