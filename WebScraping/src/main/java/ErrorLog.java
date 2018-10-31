@@ -1,17 +1,20 @@
 import java.util.ArrayList;
+import java.util.List;
 
 public class ErrorLog {
-	ArrayList<String> log;	
+	List<String[]> log;	
 	
 	public ErrorLog() {
-		this.log = new ArrayList<String>();
+		this.log = new ArrayList<String[]>();
 	}
 	
 	public void addError(String errorMessage) {
-		log.add(errorMessage);
+		String[] error = new String[0];
+		error[0] = errorMessage;
+		log.add(error);
 	}
 	
-	public ArrayList<String> getLog() {
+	public List<String[]> getLog() {
 		return log;
 	}
 }

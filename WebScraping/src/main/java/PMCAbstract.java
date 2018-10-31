@@ -53,7 +53,7 @@ public class PMCAbstract {
         return row;
     }
     
-    public static String getAbstractData(String url, Document document) {
+    public String getAbstractData(String url, Document document) {
     	// Get Title
     	try {
     		String title = document.select("#maincontent > div > div.rprt_all > div > h1").get(0).text();

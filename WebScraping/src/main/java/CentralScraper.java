@@ -10,20 +10,36 @@ public class CentralScraper {
 	DataTable dataTable = new DataTable();
 	
 	public static void main(String[] args) throws IOException {
+		
+		// Pass in scraped URLs
+		String[] URLs = new String[5];
+		URLs[0] = "https://www.ncbi.nlm.nih.gov/pubmed/30366941";
+		URLs[1] = "https://www.ncbi.nlm.nih.gov/pubmed/30286377";
+		URLs[2] = "https://www.ncbi.nlm.nih.gov/pubmed/30366941";
+		URLs[3] = "https://www.ncbi.nlm.nih.gov/pubmed/30290272";
+		URLs[4] = "https://www.ncbi.nlm.nih.gov/pubmed/30348987";
+
+		// SCRAPE!!!!!!
 		CentralScraper CS = new CentralScraper();
-		for (String arg : args) {
-			PMCAbstract PA = new PMCAbstract(CS.getErrorLog());
-			String[] row = PA.scrapePMCAbstract(arg);
-			CS.dataTable.addRow(row);
-			CS.errorLog = PA.getErrorLog();
+		CS.scrape(URLs);
+	}
+	
+	public void scrape(String[] URLs) throws IOException {
+		for (String url : URLs) {
+			PMCAbstract PA = new PMCAbstract(getErrorLog());
+			String[] row = PA.scrapePMCAbstract(url);
+			dataTable.addRow(row);
+			errorLog = PA.getErrorLog();
 		}
 		
-		// Store Data in CSV File
-		String path = "C:\\Users\\gavst\\OneDrive - cumc.columbia.edu\\Computer Science";
-		CS.CSVdataWriter(path);
-		CS.CSVerrorWriter(path);
 		
-		// Store Error Log in 
+		String path = "C:\\Users\\gavst\\OneDrive - cumc.columbia.edu\\Computer Science";
+		
+		// Store Data in CSV File
+		CSVdataWriter(path);
+		
+		// Store Error Log in
+		CSVerrorWriter(path);
 	}
 	
 	public ErrorLog getErrorLog() {
@@ -44,9 +60,10 @@ public class CentralScraper {
   
   
         // loop through DataTable 
-        List<String> DT = errorLog.getLog();
-        String[] DTarray = DT.toArray(new String[0]);
-        writer.writeNext(DTarray); 
+        List<String[]> EL = errorLog.getLog();
+        for(int i = 1; i <= EL.size(); i++) {
+        	writer.writeNext(EL.get(i)); 
+        }
         
         // closing writer connection 
         writer.close(); 
