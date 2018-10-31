@@ -98,6 +98,10 @@ public class DataRow {
 		return row[8] == null ? true : false;
 	}
 	
+	public String getPMCID() {
+		return row[8];
+	}
+	
 	public void setKeywords(String data) {
 		row[9] = data;
 	}

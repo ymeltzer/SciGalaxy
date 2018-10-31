@@ -6,16 +6,25 @@ import org.jsoup.nodes.Document;
 
 public class PMCFullArticle {
 	
-	static DataRow DataRow = new DataRow();
+	DataRow DataRow = new DataRow();
+	ErrorLog ErrorLog;
 	
 	public static void main(String[] args) throws IOException {
-        scrapePMCFull("https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6197264/");
+		ErrorLog errorLog = new ErrorLog();
+		DataRow datarow = new DataRow();
+		PMCFullArticle PFA = new PMCFullArticle(datarow, errorLog);
+		PFA.scrapePMCFull("https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6197264/");
     }
+	
+	public PMCFullArticle(DataRow dataRow, ErrorLog errorLog) {
+		this.ErrorLog = errorLog;
+		this.DataRow = DataRow;
+	}
 	
 	//for articles of the type
     //https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6197264/
     //PMC free full article
-    public static String[] scrapePMCFull(String url) throws IOException {
+    public DataRow scrapePMCFull(String url) throws IOException {
 
     	// Get HTML of WebPage
     	final Document document = Jsoup.connect(url).get();
@@ -83,13 +92,13 @@ public class PMCFullArticle {
         String source = "PMC_Full_Article";
         DataRow.setSource(source);
         
-        //Return DataRow
+        // Convert DataRow to Stringp[] for printing
         String[] row = DataRow.getRow();
         
         //Print DataRow
         Arrays.stream(row).forEach(System.out::println);
         System.out.println();
         
-        return row;
+        return DataRow;
     }
 }

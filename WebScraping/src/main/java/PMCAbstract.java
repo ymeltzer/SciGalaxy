@@ -129,6 +129,12 @@ public class PMCAbstract {
         String source = "PMC_Abstract";
         DataRow.setSource(source);
         
+        // Check for PMC Full Article
+        if(!DataRow.isPMCIDEmpty()) {
+        	String PMCID = DataRow.getPMCID();
+        	journalURL = "https://www.ncbi.nlm.nih.gov/pmc/articles/" + PMCID;
+        }
+        
         return journalURL;     
     }
     

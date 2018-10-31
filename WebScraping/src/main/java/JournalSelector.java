@@ -1,15 +1,20 @@
-
-
+import java.io.IOException;
 
 public class JournalSelector {
     DataRow DataRow;
 	ErrorLog errorLog;
     
-	public JournalSelector(String journalURL, DataRow row, ErrorLog errorLog) {
+	public JournalSelector(String journalURL, DataRow row, ErrorLog errorLog) throws IOException {
     	this.DataRow = row;
     	this.errorLog = errorLog;
 		
-		//if(journalURL.contains())
+		// Check for PMC Full Article (PMC)
+    	if(journalURL.contains("PMC")) {
+			PMCFullArticle PFA = new PMCFullArticle(row, errorLog);
+			DataRow = PFA.scrapePMCFull(journalURL);
+		}
+    	
+    	// Check for Elsevier Article
     }
 	
 	public DataRow getJournalData() {
