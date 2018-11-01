@@ -18,7 +18,7 @@ public class PMCFullArticle {
 	
 	public PMCFullArticle(DataRow dataRow, ErrorLog errorLog) {
 		this.ErrorLog = errorLog;
-		this.DataRow = DataRow;
+		this.DataRow = dataRow;
 	}
 	
 	//for articles of the type
@@ -27,54 +27,104 @@ public class PMCFullArticle {
     public DataRow scrapePMCFull(String url) throws IOException {
 
     	// Get HTML of WebPage
-    	final Document document = Jsoup.connect(url).get();
+    	try {
+        	final Document document = Jsoup.connect(url).get();
+            
+        	DataRow = getPMCdata(document, url); 
+    	}
+    	catch (Exception e) {
+    		ErrorLog.addError("Error: HTML Document Not found for " + url);
+    	}
         
+        //Print DataRow
+        //String[] row = DataRow.getRow();
+        //Arrays.stream(row).forEach(System.out::println);
+        //System.out.println();
+        
+        return DataRow;
+    }
+    
+    public DataRow getPMCdata(Document document, String url) {
     	// Get Title
-    	if (DataRow.isTitleEmpty()) {
-    		String title = document.select(".content-title").get(0).text();
-        	DataRow.setTitle(title);
+    	try {
+    		if (DataRow.isTitleEmpty()) {
+        		String title = document.select(".content-title").get(0).text();
+            	DataRow.setTitle(title);
+            }
+    	}
+    	catch (IndexOutOfBoundsException e ) {
+        	ErrorLog.addError("Error: No Title found in PMC Article of" + url);
         }
     	
         // Get Authors
-        if(DataRow.isAuthorsEmpty()) {
-        	String authors = document.select(".fm-author").get(0).text();
-            DataRow.setAuthors(authors);
+        try {
+        	if(DataRow.isAuthorsEmpty()) {
+            	String authors = document.select(".fm-author").get(0).text();
+                DataRow.setAuthors(authors);
+            }
+        }
+        catch (IndexOutOfBoundsException e ) {
+        	ErrorLog.addError("Error: No Authors found in PMC Article of" + url);
         }
         
         // Get Journal
-        if(DataRow.isJournalEmpty()) {
-        	String journal = document.select(".cit").get(0).text();
-            journal = journal.split("\\.")[0];
-            DataRow.setJournal(journal);
+        try {
+        	if(DataRow.isJournalEmpty()) {
+            	String journal = document.select(".cit").get(0).text();
+                journal = journal.split("\\.")[0];
+                DataRow.setJournal(journal);
+            }	
+        }
+        catch (IndexOutOfBoundsException e ) {
+        	ErrorLog.addError("Error: No Journal found in PMC Article of" + url);
         }
         
         // Get Publication Date
-        if(DataRow.isPublicationDateEmpty()) {
-        	String publicationDate = document.select(".fm-vol-iss-date").get(0).text();
-            publicationDate = publicationDate.split(" ", 2)[1].split(" ", 2)[1].split("\\.")[0];
-            DataRow.setPublicationDate(publicationDate);
+        try {
+        	if(DataRow.isPublicationDateEmpty()) {
+            	String publicationDate = document.select(".fm-vol-iss-date").get(0).text();
+                publicationDate = publicationDate.split(" ", 2)[1].split(" ", 2)[1].split("\\.")[0];
+                DataRow.setPublicationDate(publicationDate);
+            }
+        }
+        catch (IndexOutOfBoundsException e ) {
+        	ErrorLog.addError("Error: No Publciation Date found in PMC Article of" + url);
         }
 
         //Get DOI
-        if(DataRow.isDOIEmpty()) {
-            String DOI = document.select(".doi").get(0).text();
-            DOI = DOI.split("\\[")[1].split("\\]")[0];
-            DataRow.setDOI(DOI);
+        try {
+        	if(DataRow.isDOIEmpty()) {
+                String DOI = document.select(".doi").get(0).text();
+                DOI = DOI.split("\\[")[1].split("\\]")[0];
+                DataRow.setDOI(DOI);
+            }
+        }
+        catch (IndexOutOfBoundsException e ) {
+        	ErrorLog.addError("Error: No DOI found in PMC Article of" + url);
         }
         
         // Get PMID
-        if(DataRow.isPMIDEmpty()) {
-            String PMID = document.select(".fm-citation-pmid").get(0).text();
-            PMID = PMID.split(" ")[1];
-            DataRow.setPMID(PMID);	
+        try {
+            if(DataRow.isPMIDEmpty()) {
+                String PMID = document.select(".fm-citation-pmid").get(0).text();
+                PMID = PMID.split(" ")[1];
+                DataRow.setPMID(PMID);	
+            }	
         }
-
-
+        catch (IndexOutOfBoundsException e ) {
+        	ErrorLog.addError("Error: No PMID found in PMC Article of" + url);
+        }
+        
         // Get PMCID
-        if(DataRow.isPMCIDEmpty()) {
-            String PMCID = document.select(".fm-citation-pmcid").get(0).text();
-            PMCID = PMCID.split(" ")[1];
-            DataRow.setPMCID(PMCID);
+        try {
+        	if(DataRow.isPMCIDEmpty()) {
+                String PMCID = document.select(".fm-citation-pmcid").get(0).text();
+                PMCID = PMCID.split(" ")[1];
+                DataRow.setPMCID(PMCID);
+            }
+        }
+        catch (IndexOutOfBoundsException e ) {
+        	ErrorLog.addError("Error: No PMCID found in PMC Article of" + url);
         }
         
         // Set Journal URL
@@ -91,14 +141,7 @@ public class PMCFullArticle {
         // Set Source
         String source = "PMC_Full_Article";
         DataRow.setSource(source);
-        
-        // Convert DataRow to Stringp[] for printing
-        String[] row = DataRow.getRow();
-        
-        //Print DataRow
-        Arrays.stream(row).forEach(System.out::println);
-        System.out.println();
-        
-        return DataRow;
+    	
+    	return DataRow;
     }
 }

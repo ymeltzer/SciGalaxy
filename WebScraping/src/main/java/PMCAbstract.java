@@ -7,6 +7,7 @@ import org.jsoup.nodes.Document;
 public class PMCAbstract {
 	DataRow DataRow;
 	ErrorLog ErrorLog;
+	String journalURL;
 	
 	public static void main(String[] args) throws IOException {
         ErrorLog errorLog = new ErrorLog();
@@ -32,12 +33,15 @@ public class PMCAbstract {
     		final Document document = Jsoup.connect(url).get();
     		
     		// Get Data from PubMed Abstract
-    		String journalURL = getAbstractData(url, document);
+    		getAbstractData(url, document);
     		
             // Get rest of Data from Journal
             JournalSelector js = new JournalSelector(journalURL, DataRow, ErrorLog);
-            DataRow = js.getJournalData();
-            ErrorLog = js.getErrorLog();
+            if(journalURL != null) {
+                DataRow = js.getJournalData();
+                ErrorLog = js.getErrorLog();
+            }
+
     	}
     	catch (Exception e) {
     		ErrorLog.addError("Error: HTML Document Not found for " + url);
@@ -47,13 +51,13 @@ public class PMCAbstract {
         String[] row = DataRow.getRow();
         
         //Print DataRow
-        Arrays.stream(row).forEach(System.out::println);
-        System.out.println();
+        //Arrays.stream(row).forEach(System.out::println);
+        //System.out.println();
         
         return row;
     }
     
-    public String getAbstractData(String url, Document document) {
+    public void getAbstractData(String url, Document document) {
     	// Get Title
     	try {
     		String title = document.select("#maincontent > div > div.rprt_all > div > h1").get(0).text();
@@ -73,37 +77,63 @@ public class PMCAbstract {
         }
         
         // Get Journal
-        String journal = document.select(".cit").get(0).text();
-        journal = journal.split("\\.")[0];
-        DataRow.setJournal(journal);
+        try {
+        	String journal = document.select(".cit").get(0).text();
+            journal = journal.split("\\.")[0];
+            DataRow.setJournal(journal);
+        }
+    	catch (IndexOutOfBoundsException e ) {
+        	ErrorLog.addError("Error: No Journal Name found in Abstract of " + url);
+        }
         
         // Get Publication Date
-        String publicationDate = document.select(".cit").get(0).text();
-        publicationDate = publicationDate.split("\\. ")[1];
-        if(publicationDate.contains(":")) {
-        	publicationDate = publicationDate.split(":")[0];
-        }
-        if(publicationDate.contains(";")) {
-        	publicationDate = publicationDate.split(";")[0];
-        }
-        DataRow.setPublicationDate(publicationDate);
+       try {
+    	   String publicationDate = document.select(".cit").get(0).text();
+           publicationDate = publicationDate.split("\\. ")[1];
+           if(publicationDate.contains(":")) {
+           	publicationDate = publicationDate.split(":")[0];
+           }
+           if(publicationDate.contains(";")) {
+           	publicationDate = publicationDate.split(";")[0];
+           }
+           DataRow.setPublicationDate(publicationDate);
+       }
+       catch (IndexOutOfBoundsException e ) {
+       	ErrorLog.addError("Error: No Publication Date found in Abstract of " + url);
+       }
         
         // Save PubMed URL
         DataRow.setPubMedURL(url);
         
         // Get Journal URL
-        String journalURL = document.select("#EntrezForm > div:nth-child(1) > div.supplemental.col.three_col.last > div > div.icons.portlet > a").attr("href");
-        DataRow.setJournalURL(journalURL);
+        try {
+        	 String journalURL = document.select("#EntrezForm > div:nth-child(1) > div.supplemental.col.three_col.last > div > div.icons.portlet > a").attr("href");
+             DataRow.setJournalURL(journalURL);
+             this.journalURL = journalURL;
+        }
+        catch (IndexOutOfBoundsException e ) {
+           	ErrorLog.addError("Error: No Journal URL found in Abstract of " + url);
+        }
         
         // Get DOI
-        String DOI = document.select(".rprtid").get(0).text();
-        DOI = DOI.split("DOI: ")[1];
-        DataRow.setDOI(DOI);
+        try {
+            String DOI = document.select(".rprtid").get(0).text();
+            DOI = DOI.split("DOI: ")[1];
+            DataRow.setDOI(DOI);
+        }
+        catch (IndexOutOfBoundsException e ) {
+           	ErrorLog.addError("Error: No DOI found in Abstract of " + url);
+        }
         
         // Get PMID
-        String PMID = document.select(".rprtid").get(0).text();
-        PMID = PMID.split(" ")[1];
-        DataRow.setPMID(PMID);
+        try {
+            String PMID = document.select(".rprtid").get(0).text();
+            PMID = PMID.split(" ")[1];
+            DataRow.setPMID(PMID);
+        }
+        catch (IndexOutOfBoundsException e ) {
+           	ErrorLog.addError("Error: No PMID found in Abstract of " + url);
+        }
         
         // Get PMCID
         try {
@@ -134,8 +164,7 @@ public class PMCAbstract {
         	String PMCID = DataRow.getPMCID();
         	journalURL = "https://www.ncbi.nlm.nih.gov/pmc/articles/" + PMCID;
         }
-        
-        return journalURL;     
+             
     }
     
     public ErrorLog getErrorLog() {

@@ -7,7 +7,7 @@ public class JournalSelector {
 	public JournalSelector(String journalURL, DataRow row, ErrorLog errorLog) throws IOException {
     	this.DataRow = row;
     	this.errorLog = errorLog;
-		
+    	
 		// Check for PMC Full Article (PMC)
     	if(journalURL.contains("PMC")) {
 			PMCFullArticle PFA = new PMCFullArticle(row, errorLog);

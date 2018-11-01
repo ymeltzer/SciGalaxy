@@ -19,6 +19,8 @@ public class CentralScraper {
 		URLs[3] = "https://www.ncbi.nlm.nih.gov/pubmed/30290272";
 		URLs[4] = "https://www.ncbi.nlm.nih.gov/pubmed/30348987";
 
+		
+		
 		// SCRAPE!!!!!!
 		CentralScraper CS = new CentralScraper();
 		CS.scrape(URLs);
