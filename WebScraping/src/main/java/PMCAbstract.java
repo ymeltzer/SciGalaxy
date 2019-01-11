@@ -16,7 +16,8 @@ public class PMCAbstract {
     }
 	
 	public PMCAbstract(ErrorLog errorlog) {
-		ErrorLog = errorlog;
+		this.ErrorLog = errorlog;
+		this.DataRow = new DataRow();
 	}
 	
 	//for articles of the type
@@ -38,8 +39,8 @@ public class PMCAbstract {
             // Get rest of Data from Journal
             JournalSelector js = new JournalSelector(journalURL, DataRow, ErrorLog);
             if(journalURL != null) {
-                DataRow = js.getJournalData();
-                ErrorLog = js.getErrorLog();
+                this.DataRow = js.getJournalData();
+                this.ErrorLog = js.getErrorLog();
             }
 
     	}
@@ -48,7 +49,7 @@ public class PMCAbstract {
     	}
         
         // Convert RowData to array
-        String[] row = DataRow.getRow();
+    	String[] row = DataRow.getRow();
         
         //Print DataRow
         //Arrays.stream(row).forEach(System.out::println);
@@ -139,7 +140,12 @@ public class PMCAbstract {
         try {
         	String PMCID = document.select(".rprtid").get(0).text();
             PMCID = PMCID.split(" ")[3];
-            DataRow.setPMCID(PMCID);
+            if(PMCID.contains("PMC")) {
+            	DataRow.setPMCID(PMCID);
+            }
+            else {
+            	ErrorLog.addError("Error: No PMCID found in Abstract of " + url);
+            }
         }
         catch (IndexOutOfBoundsException e ) {
         	ErrorLog.addError("Error: No PMCID found in Abstract of " + url);

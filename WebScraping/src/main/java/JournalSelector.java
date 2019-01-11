@@ -11,10 +11,15 @@ public class JournalSelector {
 		// Check for PMC Full Article (PMC)
     	if(journalURL.contains("PMC")) {
 			PMCFullArticle PFA = new PMCFullArticle(row, errorLog);
-			DataRow = PFA.scrapePMCFull(journalURL);
+			this.DataRow = PFA.scrapePMCFull(journalURL);
+			this.errorLog = PFA.getErrorLog();
 		}
     	
-    	// Check for Elsevier Article
+    	// Check Elsevier Article
+    	
+    	// Check Nature Article
+    	
+    	// ...
     }
 	
 	public DataRow getJournalData() {

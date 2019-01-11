@@ -1,4 +1,6 @@
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.List;
@@ -12,6 +14,9 @@ public class CentralScraper {
 	public static void main(String[] args) throws IOException {
 		
 		// Pass in scraped URLs
+		
+		
+		// Test URLs
 		String[] URLs = new String[5];
 		URLs[0] = "https://www.ncbi.nlm.nih.gov/pubmed/30366941";
 		URLs[1] = "https://www.ncbi.nlm.nih.gov/pubmed/30286377";
@@ -26,6 +31,25 @@ public class CentralScraper {
 		CS.scrape(URLs);
 	}
 	
+	// Read txt file of URLS
+	private String readFile(String file) throws IOException {
+	    BufferedReader reader = new BufferedReader(new FileReader (file));
+	    String         line = null;
+	    StringBuilder  stringBuilder = new StringBuilder();
+	    String         ls = System.getProperty("line.separator");
+
+	    try {
+	        while((line = reader.readLine()) != null) {
+	            stringBuilder.append(line);
+	            stringBuilder.append(ls);
+	        }
+
+	        return stringBuilder.toString();
+	    } finally {
+	        reader.close();
+	    }
+	}
+	
 	public void scrape(String[] URLs) throws IOException {
 		for (String url : URLs) {
 			PMCAbstract PA = new PMCAbstract(getErrorLog());
@@ -35,13 +59,13 @@ public class CentralScraper {
 		}
 		
 		
-		String path = "C:\\Users\\gavst\\OneDrive - cumc.columbia.edu\\Computer Science";
+		//String path = "/Users/gavst/OneDrive - cumc.columbia.edu/Computer Science";
 		
 		// Store Data in CSV File
-		CSVdataWriter(path);
+		CSVdataWriter();
 		
 		// Store Error Log in
-		CSVerrorWriter(path);
+		CSVerrorWriter();
 	}
 	
 	public ErrorLog getErrorLog() {
@@ -49,21 +73,24 @@ public class CentralScraper {
 	}
 	
 	// Make CSV File out of Scraped Data
-	public void CSVerrorWriter(String filePath) throws IOException {
+	public void CSVerrorWriter() throws IOException {
 		// first create file object for file placed at location 
 	    // specified by filepath 
-	    File file = new File(filePath);  
+	    //File file = new File(filePath);  
         
 	    // create FileWriter object with file as parameter 
-        FileWriter outputfile = new FileWriter(file); 
+        FileWriter outputfile = new FileWriter("/Users/gavst/OneDrive - cumc.columbia.edu/Computer Science/scraper_errors.csv"); 
   
         // create CSVWriter object filewriter object as parameter 
         CSVWriter writer = new CSVWriter(outputfile); 
-  
+        
+        // adding header to csv 
+        String[] columnNames = { "Error_Count", "Error_Message" };
+        writer.writeNext(columnNames);
   
         // loop through DataTable 
         List<String[]> EL = errorLog.getLog();
-        for(int i = 1; i <= EL.size(); i++) {
+        for(int i = 0; i < EL.size(); i++) {
         	writer.writeNext(EL.get(i)); 
         }
         
@@ -72,27 +99,23 @@ public class CentralScraper {
 	}
 	
 	// Make CSV File out of Error Log
-	public void CSVdataWriter(String filePath) throws IOException 
+	public void CSVdataWriter() throws IOException 
 	{ 
 	    // first create file object for file placed at location 
 	    // specified by filepath 
-	    File file = new File(filePath);  
+	    //File file = new File(filePath);  
         
 	    // create FileWriter object with file as parameter 
-        FileWriter outputfile = new FileWriter(file); 
+		FileWriter outputfile = new FileWriter("/Users/gavst/OneDrive - cumc.columbia.edu/Computer Science/scraper_data.csv"); 
+		   
   
         // create CSVWriter object filewriter object as parameter 
         CSVWriter writer = new CSVWriter(outputfile); 
   
-        // adding header to csv 
-        String[] columnNames = { "Title", "Authors", "Journal", 
-        		"Publication_Date", "PubMed_URL", "Journal_URL", "DOI", "PMID", "PMCID", 
-        		"Keywords", "MeSH_Keywords", "References", "Source" };
-        writer.writeNext(columnNames); 
-  
+      
         // loop through DataTable 
         List<String[]> DT = dataTable.getDataList();
-        for(int i = 1; i <= DT.size(); i++) {
+        for(int i = 0; i < DT.size(); i++) {
         	writer.writeNext(DT.get(i)); 
         }
         

@@ -144,4 +144,8 @@ public class PMCFullArticle {
     	
     	return DataRow;
     }
+    
+	public ErrorLog getErrorLog() {
+		return this.ErrorLog;
+	}
 }
