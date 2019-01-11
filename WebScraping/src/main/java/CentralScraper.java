@@ -3,7 +3,9 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
 
 import com.opencsv.CSVWriter;
 
@@ -24,7 +26,18 @@ public class CentralScraper {
 		URLs[3] = "https://www.ncbi.nlm.nih.gov/pubmed/30290272";
 		URLs[4] = "https://www.ncbi.nlm.nih.gov/pubmed/30348987";
 
-		
+		// List of PMIDs to loop through
+		Scanner sc = new Scanner(new File("/Users/gavst/documents/pubmed_result_aging_mitochondria.txt"));
+		List<String> lines = new ArrayList<String>();
+		while (sc.hasNextLine()) {
+		  lines.add(sc.nextLine());
+		}
+
+		// Add proper link address to each PMID number
+		URLs = lines.toArray(new String[0]);
+		for(int i =0; i < URLs.length; i++) {
+			URLs[i] = "https://www.ncbi.nlm.nih.gov/pubmed/" + URLs[i];
+		}
 		
 		// SCRAPE!!!!!!
 		CentralScraper CS = new CentralScraper();
